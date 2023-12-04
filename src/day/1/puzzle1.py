@@ -2,6 +2,16 @@ import re
 
 inputFile = 'input/day/1/input.txt'
 
+digits = {'one': '1',
+          'two': '2',
+          'three': '3',
+          'four': '4',
+          'five': '5',
+          'six': '6',
+          'seven': '7',
+          'eight': '8',
+          'nine': '9'}
+
 def openFile(inputFileLoc):
   f = open(inputFileLoc, "r")
 
@@ -16,8 +26,9 @@ def getCodes(inputFile):
   return codes
 
 def getCode(line):
-  first = re.findall('[0-9]', line)[0]
-  last = re.findall('[0-9]', line)[-1]
+  found = re.findall('(?=([0-9]|' + '|'.join(digits.keys()) + '))', line)
+  first = digits.get(found[0]) or found[0]
+  last = digits.get(found[-1]) or found[-1]
 
   return int(first + last)
 
