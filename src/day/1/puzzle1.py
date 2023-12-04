@@ -1,3 +1,5 @@
+import re
+
 inputFile = 'input/day/1/input.txt'
 
 def openFile(inputFileLoc):
@@ -14,17 +16,16 @@ def getCodes(inputFile):
   return codes
 
 def getCode(line):
-  first = line[0:1]
-  last = line[-2]
+  first = re.findall('[0-9]', line)[0]
+  last = re.findall('[0-9]', line)[-1]
 
-  return first + last
+  return int(first + last)
 
 def main(): 
     file = openFile(inputFile)
     codes = getCodes(file)
 
-    for code in codes:
-       print(code)
+    print(sum(codes))
   
 if __name__=="__main__": 
     main() 
