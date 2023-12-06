@@ -9,12 +9,24 @@ class Coord:
     yMax = 0
 
 class Symbol:
-    x = 0
-    y = 0
+    def __init__(self):
+        self.x = 0
+        self.y = 0
+        self.matchCount = 0
+        self.matches = set()
+
+    def isGear(self):
+        return self.matchCount == 2
+    
+    def getValue(self):
+        if self.isGear():
+            return self.matches.pop().value * self.matches.pop().value
+        else:
+            return 0
 
 class Part:
     def __init__(self):
-        self.isPart = False
+        self.matchCount = 0
         # All the coords a symbol could be in
         self.coords = Coord()
         self.value = 0
@@ -25,8 +37,9 @@ class Part:
         elif symbol.y > self.coords.yMax or symbol.y < self.coords.yMin:
             return False
         else:
-            self.isPart = True
-            return True
+            if not symbol.matches.__contains__(self):
+                symbol.matchCount += 1
+                symbol.matches.add(self)
         
 class LineResult:
     def __init__(self):
@@ -75,7 +88,7 @@ def processLine(line, y, prevSymbols, prevParts):
     lineResult = LineResult()
     
     parts = re.findall('[0-9]+', line)
-    symbols = re.findall('\*|\#|\$|\+|\-|\@|\=|\&|\%|\/', line)
+    symbols = re.findall('\*', line)
 
     symbolObjs = createSymbols(symbols, line, y)
     partObjs = createParts(parts, line, y)
@@ -89,12 +102,10 @@ def processLine(line, y, prevSymbols, prevParts):
     lineSum = 0
 
     for partObj in partObjs:
-        # don't check parts that have already been confirmed
-        if not partObj.isPart:
-            for symbolObj in symbolObjs:
-                if partObj.containsSymbol(symbolObj):
-                    lineSum += partObj.value
-                    break
+        for symbolObj in symbolObjs:
+            # don't keep checking symbols that are over 2 matches
+            if symbolObj.matchCount < 3:
+                partObj.containsSymbol(symbolObj)
     
     lineResult.value = lineSum
 
@@ -114,13 +125,19 @@ def main():
     prevParts = []
     prevSymbols = []
 
+    allSymbols = set()
+
     for line in file:
         lineResult = processLine(line, y, prevSymbols, prevParts)
         prevParts = lineResult.parts
         prevSymbols = lineResult.symbols
 
-        sum += lineResult.value
+        allSymbols.update(prevSymbols)
+
         y += 1
+
+    for symbol in allSymbols:
+        sum += symbol.getValue()
 
     result = sum 
     
