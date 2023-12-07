@@ -57,7 +57,7 @@ def processGame(game, games):
     if wins > 0:
         nextGameIndex = int(game.cardNum)
 
-        for x in range(nextGameIndex, wins):
+        for x in range(nextGameIndex, nextGameIndex + wins):
             totalGames.extend(processGame(games[x], games))
     
     return totalGames
