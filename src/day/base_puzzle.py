@@ -1,4 +1,4 @@
-inputFile = ''
+inputFile = 'input/day/x/input.txt'
 
 def openFile(inputFileLoc):
     f = open(inputFileLoc, "r")
