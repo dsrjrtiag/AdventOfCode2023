@@ -6,12 +6,18 @@ class Ratio:
         self.source = source
         self.length = length
 
-def processRatio(inputs, ratio : Ratio):
+def processRatio(inputs, ratios : [Ratio]):
     outputs = []
     for input in inputs:
-        if input >= ratio.source and input < ratio.source + ratio.length:
-            outputs.append(input + (ratio.dest - ratio.source))
-        else:
+        appended = False
+        for ratio in ratios:
+            if input >= ratio.source and input < ratio.source + ratio.length:
+                outputs.append(ratio.dest + (input - ratio.source))
+                appended = True
+                break
+            # else:
+            #     outputs.append(input)
+        if not appended:
             outputs.append(input)
 
     return outputs
@@ -38,11 +44,17 @@ def main():
     file = openFile(inputFile)
 
     outputs = readSeeds(file.readline())
+    ratios = []
 
     for line in file:
         if line[0].isdigit():
-            ratio = readRatio(line)
-            outputs = processRatio(outputs, ratio)
+            ratios.append(readRatio(line))
+        else:
+            if len(ratios) > 0:
+                outputs = processRatio(outputs, ratios)
+                ratios = []
+
+    outputs = processRatio(outputs, ratios)
     outputs.sort()
     result = outputs
     print(result)
