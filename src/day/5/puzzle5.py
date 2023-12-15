@@ -30,7 +30,11 @@ def openFile(inputFileLoc):
 def readSeeds(line: str):
     seeds = []
 
-    seeds = list(map(int, line.split()[1:]))
+    inputs = list(map(int, line.split()[1:]))
+    for index, input in enumerate(inputs):
+        seeds.append(inputs[index])
+        index+=1
+        
 
     return seeds
 
