@@ -11,6 +11,8 @@ def processRatio(inputs, ratios : [Ratio]):
     for input in inputs:
         appended = False
         for ratio in ratios:
+            # refactor for ranges
+            if range.
             if input >= ratio.source and input < ratio.source + ratio.length:
                 outputs.append(ratio.dest + (input - ratio.source))
                 appended = True
@@ -28,15 +30,18 @@ def openFile(inputFileLoc):
     return f
 
 def readSeeds(line: str):
-    seeds = []
+    seedSets = []
 
     inputs = list(map(int, line.split()[1:]))
-    for index, input in enumerate(inputs):
-        seeds.append(inputs[index])
-        index+=1
+    iteration = iter(inputs)
+    for input in iteration:
+        start = input
+        count = next(iteration)
+        # use ranges
+        seedset = range(start, start + count)
+        seedSets.append(seedset)
         
-
-    return seeds
+    return seedSets
 
 def readRatio(line: str):
     values = line.split()
@@ -47,7 +52,7 @@ def main():
     # run puzzle
     file = openFile(inputFile)
 
-    outputs = readSeeds(file.readline())
+    seedSets = readSeeds(file.readline())
     ratios = []
 
     for line in file:
@@ -55,12 +60,19 @@ def main():
             ratios.append(readRatio(line))
         else:
             if len(ratios) > 0:
-                outputs = processRatio(outputs, ratios)
-                ratios = []
+                # process each set of seeds for each ratio in parrallel
+                for seedset in seedSets:
+                    seedset = processRatio(seedset, ratios)
 
     outputs = processRatio(outputs, ratios)
-    outputs.sort()
-    result = outputs
+
+    lowest = []
+    # Get the lowest seed from each range
+    for seedSet in seedSets:
+        lowest.append(min(seedSet))
+
+    lowest.sort()
+    result = min(outputs)
     print(result)
   
 if __name__=="__main__": 
